@@ -1,7 +1,9 @@
 #### this is the data exploration file used for the predictive analysis on R__solar system ####
+rm(ls=list())  #clean environment
 
 # !! replace the file directory with your own directory for the dataset
 solar_data <- readRDS('/Documents and Settings/Pierre Computer/Documents/IE_classes/R/group project/solar_dataset.RData')
+solar_data <- readRDS('C:/Users/Ivan.Polakovic/Desktop/IE/R/group assignment/solar_dataset.RData')
 summary(solar_data)
 dim(solar_data)
 class(solar_data)
@@ -36,6 +38,7 @@ sapply(solar_data_dt,nas)
 
 #convert coltype
 solar_data_num <- sapply(solar_data_dt[,2:length(solar_data_dt)],as.double)
+# how did you use as.double to cast as numeric?
 solar_data_dt <- cbind(solar_data_dt[,1],solar_data_num)
 solar_data_dt[,mean(ACME)]
 sapply(solar_data_dt,mean)
