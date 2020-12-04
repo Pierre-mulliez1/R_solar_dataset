@@ -61,10 +61,16 @@ scatter.smooth(date_visualization)
 
 #check for monthly records 
 Monthlymeans <- date_visualization[,substr(Date, 5, 6)]
-plot(x = date_visualization[,substr(Date, 5, 6) ],y = date_visualization$AVG,main = "average by date",xlab = "Date in int format",ylab = "Average of stations")
+plot(x = Monthlymeans,y = date_visualization$AVG,main = "average by date",xlab = "Date in int format",ylab = "Average of stations")
 #records have a mean peak in summer which make sense more sun = more solar energy 
+#standard deviation per month  
+sd.d=function(x){sqrt((length(x)-1)/length(x))*sd(x)}
+#logarythm to simulate normal distribution ?
+dev_month <- date_visualization[,list(standarddev = sd.d(log(AVG))),list(Month = substr(Date, 5, 6))]
+dev_month
 
-#PCA analysis: varaition in the dataset
+
+#PCA analysis: variation in the Dataset 
 
 
 
