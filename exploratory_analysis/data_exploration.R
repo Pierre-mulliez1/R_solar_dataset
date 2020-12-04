@@ -49,8 +49,22 @@ options(scipen = 999)
 visualisation_solar <- solar_data_dt[,2:98]
 means <- data.frame(round(sapply(visualisation_solar,mean),2))
 scatter.smooth(means)
+means
 
 #Randomly ordered what can influence our dataset ?
 #scatter the mean per date 
+ rowMax(solar_data_dt[,2:98], which = FALSE, ignore.zero = TRUE)
+ setDT(solar_data_dt)
+date_visualization <- solar_data_dt[, .(AVG = rowMeans(.SD)),Date]
+scatter.smooth(date_visualization)
+#Conclusion : clear seasonal pattern 
+
+#check for monthly records 
+Monthlymeans <- date_visualization[,substr(Date, 5, 6)]
+plot(x = date_visualization[,substr(Date, 5, 6) ],y = date_visualization$AVG,main = "average by date",xlab = "Date in int format",ylab = "Average of stations")
+#records have a mean peak in summer which make sense more sun = more solar energy 
+
+#PCA analysis: varaition in the dataset
+
 
 
