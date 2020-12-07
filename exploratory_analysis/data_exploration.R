@@ -1,17 +1,21 @@
 #### this is the data exploration file used for the predictive analysis on R__solar system ####
-rm(ls=list())  #clean environment
+rm(list=ls())  #clean environment
 
 # !! replace the file directory with your own directory for the dataset
 #Pierre RDS source
 solar_data <- readRDS('/Documents and Settings/Pierre Computer/Documents/IE_classes/R/group project/solar_dataset.RData')
 #Ivan RDS source
 solar_data <- readRDS('C:/Users/Ivan.Polakovic/Desktop/IE/R/group assignment/solar_dataset.RData')
+#Max RDS source
+solar_data <- readRDS('/Users/admin/OneDrive/Documents/IE - Madrid/Term 1/01 R Programming/Group Assignment/GitHub/data/solar_dataset.RData')
+
 
 summary(solar_data)
 dim(solar_data)
 class(solar_data)
 head(solar_data)
 tail(solar_data)
+colnames(solar_data)
 
 #data is already structured as a data table
 library(data.table)
@@ -30,6 +34,9 @@ for (element in colnames(solar_data)){
 solar_data_dt <- solar_data[,list(solar_data[1:5113,])]
 tail(solar_data_dt)
 solar_data_predict <- solar_data[,list(solar_data[5114:6909,])]
+x_raw_train = <- solar_data[1:5113, 2:99] 
+x_PC_train = <- solar_data[1:5113, 100:456] 
+y_train = solar_data[1:5113, 2:99] 
 
 #NA percentage by column 
 nas <- function(x) {
@@ -68,6 +75,23 @@ sd.d=function(x){sqrt((length(x)-1)/length(x))*sd(x)}
 #logarythm to simulate normal distribution ?
 dev_month <- date_visualization[,list(standarddev = sd.d(log(AVG))),list(Month = substr(Date, 5, 6))]
 dev_month
+
+
+# Scatterplots per Column
+dt <- data.table(data)
+x <- dt[1:5113, 2:99] 
+res = cor(x)
+corr_dt = as.data.table(res)
+boxplot(x = as.list(as.data.frame(x)))
+
+# Correlation Heatmat & Clustering
+#install.packages("corrplot")
+source("http://www.sthda.com/upload/rquery_cormat.r")
+rquery.cormat(x_num, type='full', graphType="heatmap")
+corr_list <- rquery.cormat(x_num, type="flatten", graph=FALSE)
+corr_list
+
+#
 
 
 #PCA analysis: variation in the Dataset 
