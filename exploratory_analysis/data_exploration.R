@@ -29,13 +29,13 @@ for (element in colnames(solar_data)){
   column_name[counter] <-  element
   counter <- counter + 1
 }
-
+ 
 #####separate the dataset into 2: value to predict | known value
 solar_data_dt <- solar_data[,list(solar_data[1:5113,])]
 tail(solar_data_dt)
 solar_data_predict <- solar_data[,list(solar_data[5114:6909,])]
-x_raw_train = <- solar_data[1:5113, 2:99] 
-x_PC_train = <- solar_data[1:5113, 100:456] 
+x_raw_train  <- solar_data[1:5113, 2:99] 
+x_PC_train  <- solar_data[1:5113, 100:456] 
 y_train = solar_data[1:5113, 2:99] 
 
 #NA percentage by column 
@@ -76,6 +76,25 @@ sd.d=function(x){sqrt((length(x)-1)/length(x))*sd(x)}
 dev_month <- date_visualization[,list(standarddev = sd.d(log(AVG))),list(Month = substr(Date, 5, 6))]
 dev_month
 
+
+analysis <- function(df){
+  name <- colnames(df)
+  IQR <- lapply(df, IQR, na.rm = TRUE)
+  median <- lapply(df, median, na.rm = TRUE)
+  mean <- lapply(df, mean, na.rm = TRUE)
+  stdv <- lapply(df,sd,na.rm = TRUE)
+  maxi <- lapply(df,max,na.rm = TRUE)
+  mini <- lapply(df,min,na.rm = TRUE)
+  analysed <- data.table(names = name,average = mean,median = median,quantile_range = IQR, standard_deviation = stdv, maximum = maxi, minimum = mini)
+  return(analysed)
+}
+
+#summary of analysis 
+analysis(visualisation_solar)
+
+
+
+#order by mean 
 
 # Scatterplots per Column
 dt <- data.table(data)
