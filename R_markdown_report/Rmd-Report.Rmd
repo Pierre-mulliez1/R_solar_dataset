@@ -1,0 +1,69 @@
+---
+title: "Report Group 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<center class="anchor" id="Contents" style="background-color:Gainsboro; width:40%;">Contents</center>
+* [Contents](#Contents)
+* [Introduction](#Introduction)
+* [EDA](#EDA)
+* [Data Cleaning](#Data Cleaning)
+* [Data Manipulation](#Data Manipulation)
+
+<a center class="anchor" id="Introduction" style="background-color:Gainsboro; width:40%;"></a>
+<center style="background-color:Gainsboro; width:40%;">Introduction</center>
+
+
+> 'As part of the course **"Programming in R" at IE - HST**, we foster our newly learned skills by participating in a Kaggle competition. The problem requires us to do Exploratory Data Analysis, Data Cleaning and Manipulation and implement some sort of Machine Learning in R.'
+
+The data can be found  [here](https://www.kaggle.com/c/ams-2014-solar-energy-prediction-contest/overview)
+
+```{r, echo=F}
+library(data.table)
+
+rm(list=ls())  #clean environment
+#Pierre RDS source
+#solar_data <- readRDS('/Documents and Settings/Pierre Computer/Documents/IE_classes/R/group project/solar_dataset.RData')
+#Ivan RDS source
+#solar_data <- readRDS('C:/Users/Ivan.Polakovic/Desktop/IE/R/group assignment/solar_dataset.RData')
+#Max RDS source
+solar_data <- readRDS('/Users/admin/OneDrive/Documents/IE - Madrid/Term 1/01 R Programming/Group Assignment/GitHub/data/solar_dataset.RData')
+```
+```{r, echo=F}
+solar_data_dt <- solar_data[,list(solar_data[1:5113,])]
+solar_data_predict <- solar_data[,list(solar_data[5114:6909,])]
+x_raw_train <- solar_data[1:5113, 2:99] 
+x_PC_train <- solar_data[1:5113, 100:456] 
+y_train <- solar_data[1:5113, 2:99] 
+```
+
+
+```{r}
+summary(solar_data[,1:20])
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+setDT(solar_data_dt)
+date_visualization <- solar_data_dt[, .(AVG = rowMeans(.SD)),Date]
+scatter.smooth(date_visualization)
+```
+
+<a center class="anchor" id="EDA" style="background-color:Gainsboro; width:40%;"></a>
+<center style="background-color:Gainsboro; width:40%;">EDA</center>
+> 'put **stuff** here'
+
+<a center class="anchor" id="Data Cleaning" style="background-color:Gainsboro; width:40%;"></a>
+<center style="background-color:Gainsboro; width:40%;">Data Cleaning</center>
+> 'put **stuff** here'
+
+<a center class="anchor" id="Data Manipulation" style="background-color:Gainsboro; width:40%;"></a>
+<center style="background-color:Gainsboro; width:40%;">Data Manipulation</center>
+> 'put **stuff** here'
