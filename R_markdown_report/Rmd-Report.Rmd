@@ -7,6 +7,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+![code.jpg](code.jpg)
+
 <center class="anchor" id="Contents" style="background-color:Gainsboro; width:40%;">Contents</center>
 * [Contents](#Contents)
 * [Introduction](#Introduction)
