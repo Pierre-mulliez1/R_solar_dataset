@@ -90,9 +90,10 @@ analysis <- function(df){
 }
 
 #summary of analysis 
-analysis(visualisation_solar)
-
-
+solar_analyzed <- analysis(visualisation_solar)
+solar_analyzed
+#plot analysis = review 
+plot(x = solar_analyzed$average,y = solar_analyzed$standard_deviation,xlab = "mean", ylab= "standard dev")
 
 #order by mean 
 
