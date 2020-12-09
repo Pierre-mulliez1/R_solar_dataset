@@ -76,15 +76,16 @@ sd.d=function(x){sqrt((length(x)-1)/length(x))*sd(x)}
 dev_month <- date_visualization[,list(standarddev = sd.d(log(AVG))),list(Month = substr(Date, 5, 6))]
 dev_month
 
-
+#summary data table 
+#data conversion for further analysis
 analysis <- function(df){
-  name <- colnames(df)
-  IQR <- lapply(df, IQR, na.rm = TRUE)
-  median <- lapply(df, median, na.rm = TRUE)
-  mean <- lapply(df, mean, na.rm = TRUE)
-  stdv <- lapply(df,sd,na.rm = TRUE)
-  maxi <- lapply(df,max,na.rm = TRUE)
-  mini <- lapply(df,min,na.rm = TRUE)
+  name <- as.character(colnames(df))
+  IQR <- as.integer(lapply(df, IQR, na.rm = TRUE))
+  median <- as.integer(lapply(df, median, na.rm = TRUE))
+  mean <- as.integer(lapply(df, mean, na.rm = TRUE))
+  stdv <- as.integer(lapply(df,sd,na.rm = TRUE))
+  maxi <- as.integer(lapply(df,max,na.rm = TRUE))
+  mini <- as.integer(lapply(df,min,na.rm = TRUE))
   analysed <- data.table(names = name,average = mean,median = median,quantile_range = IQR, standard_deviation = stdv, maximum = maxi, minimum = mini)
   return(analysed)
 }
@@ -94,8 +95,19 @@ solar_analyzed <- analysis(visualisation_solar)
 solar_analyzed
 #plot analysis = review 
 plot(x = solar_analyzed$average,y = solar_analyzed$standard_deviation,xlab = "mean", ylab= "standard dev")
+means <- mean(solar_analyzed$average)
+stdev <- sd(solar_analyzed$average)
+onebin <- means + stdev
+twobin <- means + stdev*2
+threebin <- means + stdev*3
+monebin <- means - stdev
+mtwobin <- means - stdev*2
+mthreebin <- means - stdev*3
+distribution <- data.frame(mthreebin,mtwobin,monebin,means,onebin,twobin,threebin)
+distribution <- sapply(distribution, as.integer)
+hist(x = )
+1+1
 
-#order by mean 
 
 # Scatterplots per Column
 dt <- data.table(data)
@@ -111,7 +123,7 @@ rquery.cormat(x_num, type='full', graphType="heatmap")
 corr_list <- rquery.cormat(x_num, type="flatten", graph=FALSE)
 corr_list
 
-#
+
 
 
 #PCA analysis: variation in the Dataset 
