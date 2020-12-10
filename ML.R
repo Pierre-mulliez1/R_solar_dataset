@@ -73,46 +73,14 @@ remove(data)
 df <- as.data.frame(dt)
 df$Date <- strptime(df$Date, format='%Y%m%d')              # formatting date
 df$Date <- as.POSIXct(df$Date)
-
-x <- as.data.frame(df[1:5113, 1:99])
-x$Date <- strptime(x$Date, format='%Y%m%d')              # formatting date
-x$Date <- as.POSIXct(x$Date)
 column_names <- as.array(colnames(dt) )                   # create array with column names
+
+# create x_ts
+x <- as.data.frame(df[1:5113, 1:99])
 x_ts <- xts(x[,-1], x[,1])                               # format x to timeseries
 
-
-# prepare submittion file
-y <- as.data.frame(df[5114:6909, 1:456])
-predictions <- as.data.table(y[,1])                      # initialize a data table with date column
-#predictions <- rename(predictions, Date = V1)  
-
-# Data formatting for Neural Net, which only takes numerics
-x_num <- as.data.frame(dt[1:5113, 1:99])
-x_num <- sapply(x_num, as.numeric)
-
-x_PC <- as.data.frame(dt[1:5113, 100:456])
-x_PC <- sapply(x_PC, as.numeric)
-
-y_num <- as.data.frame(dt[5114:6909, 1])
-y_num <- sapply(y_num, as.numeric)
-
-#################################### EDA ######################################
-head(x_ts[,1])
-dim(x_ts[,1])
-summary(x_ts[,1])
-plot(x_ts[1:1500,1])
-model <- glm( x[1:1500,2] ~ x[1:1500,1])
-plot(model)
-
-################################ FEATURE EXTRACTION ##################################
-for (i in 2:99){
-  #x_weekly <- x[,c(i)] %>% mutate(weekly = rollmean(ACME, k = 7, fill = NA))       # 7 day average 
-  #x_monthly <- x %>% mutate(monthly = rollmean(ACME, k = 30, fill = NA))           # 30 day average 
-  #x_weekly <- x%>% mutate(weekly = rollmean(ACME, k = 365, fill = NA))             # 365 day average 
-}
-
-
-df <- df  %>% 
+# create external regressor sets
+df_reg <- df  %>%                                        # do some simple feature extraction
         mutate(year = year(Date)) %>% 
         mutate(month = month(Date)) %>% 
         mutate(day = day(Date)) %>%
@@ -120,14 +88,9 @@ df <- df  %>%
         mutate(month =  as.numeric(month)) %>%
         mutate(day =  as.numeric(day))
 
-
-df <- sapply(df, as.numeric)
-x_reg <- as.matrix(df[1:5113,100:103]) 
-#x_reg <- as.matrix(df[1:5113,100:459]) 
-y_date <- as.matrix(df[5114:6909,100:103]) 
-
-
-#Clustering should be done
+df_reg <- sapply(df_reg, as.numeric)                    #  
+x_reg <- as.matrix(df_reg[1:5113,100:103])              # select the reg vars we want to use. df[1:5113,100:459]
+y_reg <- as.matrix(df_rg[5114:6909,100:103]) 
                         
   
 ################################ PREDICTION ###################################
@@ -145,10 +108,7 @@ head(predictions)
 submit_predictions(predictions)
 
 ###############################################################################
-x_tp <- transpose(prediction_df, keep.names = "col", make.names = "col0")
-prediction_df <- (prediction_df)	 
-ggplot(prediction_df, aes(x=year, y=lifeExp, group=country, color=continent)) +
-  geom_line()
+
 
 
 ############################################################################
@@ -168,8 +128,18 @@ ggplot(prediction_df, aes(x=year, y=lifeExp, group=country, color=continent)) +
 # SVM
 # xgboost
 
-
+##############################################################################
+##################################### NEXT TRY ###############################
 
 # Draft
+head(df)
+
+head(x_ts)
+head(x_reg)
+head(y_reg)
+
+fitted_model <- arima(x_ts[, col-1], xreg=x_reg)
+prediction <- forecast::forecast(fitted_model, h=1796, xreg=y_reg)
+
 
 
