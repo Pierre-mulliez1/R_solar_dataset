@@ -1,4 +1,4 @@
-#################ML######################
+################ ML #####################
 #########################################
 # Evaluation Citeria #
 # 1. Quality of code.
@@ -99,6 +99,19 @@ registerDoMC(cores=4)                       # register parallel Backend for mult
     
 rm(prediction)
 prediction <- foreach(a=2:99, combine = rbind) %dopar% get_predictions(a, 'arima')
+  
+################################ New Models ###################################
+
+ # Draft
+head(df)
+
+head(x_ts)
+head(x_reg)
+head(y_reg)
+
+fitted_model <- arima(x_ts[, col-1], xreg=x_reg)
+prediction <- forecast::forecast(fitted_model, h=1796, xreg=y_reg)
+  
 
 ############################# OUTPUT FORMATTING ################################
 prediction_df <- as.data.table(prediction)
@@ -107,7 +120,6 @@ colnames(predictions) <- column_names[1:99]
 head(predictions)
 submit_predictions(predictions)
 
-###############################################################################
 
 
 
@@ -129,17 +141,7 @@ submit_predictions(predictions)
 # xgboost
 
 ##############################################################################
-##################################### NEXT TRY ###############################
 
-# Draft
-head(df)
-
-head(x_ts)
-head(x_reg)
-head(y_reg)
-
-fitted_model <- arima(x_ts[, col-1], xreg=x_reg)
-prediction <- forecast::forecast(fitted_model, h=1796, xreg=y_reg)
 
 
 
