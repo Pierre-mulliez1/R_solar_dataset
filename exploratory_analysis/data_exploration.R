@@ -8,6 +8,8 @@ solar_data <- readRDS('/Documents and Settings/Pierre Computer/Documents/IE_clas
 solar_data <- readRDS('C:/Users/Ivan.Polakovic/Desktop/IE/R/group assignment/solar_dataset.RData')
 #Max RDS source
 solar_data <- readRDS('/Users/admin/OneDrive/Documents/IE - Madrid/Term 1/01 R Programming/Group Assignment/GitHub/data/solar_dataset.RData')
+#Antonio RDS source
+solar_data <- readRDS('solar_dataset.RData');
 
 
 summary(solar_data)
