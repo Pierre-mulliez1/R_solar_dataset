@@ -55,13 +55,13 @@ options(scipen = 999)
 #Divide the recording center from aditionnal information 
 visualisation_solar <- solar_data_dt[,2:98]
 means <- data.frame(round(sapply(visualisation_solar,mean),2))
+par(mfrow=c(1,1)) 
 scatter.smooth(means)
 means
 
 #Randomly ordered what can influence our dataset ?
 #scatter the mean per date 
- rowMax(solar_data_dt[,2:98], which = FALSE, ignore.zero = TRUE)
- setDT(solar_data_dt)
+setDT(solar_data_dt)
 date_visualization <- solar_data_dt[, .(AVG = rowMeans(.SD)),Date]
 scatter.smooth(date_visualization)
 #Conclusion : clear seasonal pattern 
@@ -104,10 +104,16 @@ monebin <- means - stdev
 mtwobin <- means - stdev*2
 mthreebin <- means - stdev*3
 distribution <- data.frame(mthreebin,mtwobin,monebin,means,onebin,twobin,threebin)
-distribution <- sapply(distribution, as.integer)
-hist(x = )
-1+1
-
+distribution <- sapply(distribution, as.integer) 
+#plots
+par(mfrow=c(2,2)) 
+plot(density(solar_analyzed$average), type = "l", col = "red",xlab = "averages by stations",main = "average station distribution")
+plot(dev_month, type = "l", col = "red",xlab = "average by month",main = "average date deviation (log)")
+plot(density(distribution), type = "l", col = "blue",xlab = "expected deviation",main = "expected station distribution")
+hist(solar_analyzed$average, col = "green", breaks = 5,xlab = "average hist",main = "Histogram of stations averages");
+par(mfrow=c(1,1)) 
+#conclusion: station distribution skewed to the left with more scattered observation than expected 
+#lower deviation for the summer month 
 
 # Scatterplots per Column
 dt <- data.table(data)
