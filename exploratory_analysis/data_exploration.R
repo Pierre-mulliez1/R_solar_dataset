@@ -117,6 +117,44 @@ par(mfrow=c(1,1))
 #conclusion: station distribution skewed to the left with more scattered observation than expected 
 #lower deviation for the summer month 
 
+#outliers 
+#values to detect outliers; it is assumed here that the sample is from a normal distribbution
+distribution <- function(x, na.rm = TRUE, ...) {
+  stdev <- sd(x)
+  meanf <- mean(x)
+  H <- meanf + 3 * stdev
+  L <- meanf - 3 * stdev
+  if (L < 0){L <- 0}
+  out <- list(H,L)
+  return(out)}
+
+#detect the outliers, printing is added for comprehension
+outliers <- function(x){
+  limit = sapply(X = x,distribution)
+  y <- data.table(column = character(), Hlimit=numeric(), Llimit = numeric(),value=numeric())
+  count <- -1
+  countI <- 0
+  dt <- data.frame(x)
+  for (el in colnames(dt)){
+    count <- count + 2
+    countI <- countI + 2
+    print( limit[[count]])
+    print( limit[[countI]])
+    for (ele in dt[el]){
+      print(ele)
+      val <-  data.table(column = el,Hlimit = limit[[count]],Llimit = limit[[countI]],value = ele)
+      y <- rbind(y,val)
+      y <- y[value > Hlimit || value < Llimit,.SD]
+    }
+  }
+  return(y)
+}
+
+
+outliers(visualisation_solar)
+
+
+
 # Scatterplots per Column
 dt <- data.table(data)
 x <- dt[1:5113, 2:99] 
