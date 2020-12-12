@@ -31,6 +31,10 @@ for (element in colnames(solar_data)){
   column_name[counter] <-  element
   counter <- counter + 1
 }
+
+# The loop above could be replaced with these two lines of code, for better clarity
+column_class <- sapply(solar_data, class)
+column_names <- colnames(solar_data) 
  
 #####separate the dataset into 2: value to predict | known value
 solar_data_dt <- solar_data[,list(solar_data[1:5113,])]
