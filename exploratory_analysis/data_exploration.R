@@ -128,7 +128,8 @@ distribution <- function(x, na.rm = TRUE, ...) {
   out <- list(H,L)
   return(out)}
 
-#detect the outliers, printing is added for comprehension
+#detect the outliers, printing is added for comprehension, goes though every value within each column 
+#compare with each value to the respective column lower and higher bounds for outliers (bounds defined in distribution fun)
 outliers <- function(x){
   limit = sapply(X = x,distribution)
   y <- data.table(column = character(), Hlimit=numeric(), Llimit = numeric(),value=numeric())
@@ -156,13 +157,23 @@ outliers(visualisation_solar)
 
 
 # Scatterplots per Column
-dt <- data.table(data)
+dt <- data.table(visualisation_solar)
 x <- dt[1:5113, 2:99] 
 res = cor(x)
 corr_dt = as.data.table(res)
 boxplot(x = as.list(as.data.frame(x)))
 
 # Correlation Heatmat & Clustering
+correlation <- visualisation_solar[,x:= list(cor(visualisation_solar[,.SD]))]
+correlation <- as.data.frame(correlation$x[1])
+# Use 'scale' to normalize
+correlation <- sapply(X = correlation,FUN = as.double)
+data <- as.matrix(correlation)
+# Default Heatmap
+heatmap(data, scale="column")
+
+
+
 #install.packages("corrplot")
 source("http://www.sthda.com/upload/rquery_cormat.r")
 rquery.cormat(x_num, type='full', graphType="heatmap")
