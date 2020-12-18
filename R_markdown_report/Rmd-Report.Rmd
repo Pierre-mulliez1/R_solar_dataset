@@ -6,16 +6,70 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+<div class = 'media'>
 ![code.jpg](code.jpg)
+<p>Pierre Mulliez </n> </p>
+</div>
 
-<center class="anchor" id="Contents" style="background-color:Gainsboro; width:40%;">Contents</center>
-* [Contents](#Contents)
-* [Introduction](#Introduction)
-* [EDA](#EDA)
-* [Data Cleaning](#Data Cleaning)
-* [Data Manipulation](#Data Manipulation)
 
+<style>
+.menutop{
+    background-color: Gainsboro;
+    padding: 1%;
+    overflow: hidden;
+    
+}.menutop a{
+    font-family: inherit;
+    font-size: 20px;
+    padding: 14px 16px; 
+    text-align:center;
+    text-decoration: none;
+    color: black;
+    float: left;
+    display: block;
+}
+
+.menutop a:hover{
+    background-color: whitesmoke;
+    border-radius: 20%;
+}
+.media{
+    background: whitesmoke;
+}
+.media p{
+   font-size: 20px;
+    padding: 14px 16px; 
+    text-align:center;
+    text-decoration: none;
+    display: none;
+}
+.media:hover p{
+  display: block;
+}
+
+@media screen and (max-width: 510px) {
+    .menutop{
+        margin-bottom: 3%;
+    }
+    
+    .menutop a {
+    float:none;
+    width: 100%;
+    font-size: 18px;
+  }
+  
+}
+
+</style>
+
+<h3 class = 'menutop' id="Contents">
+  [Contents](#Contents)
+  [Introduction](#Introduction)
+  [EDA](#EDA)
+  [Data Cleaning](#Data Cleaning)
+  [Data Manipulation](#Data Manipulation)
+</h3>
+<body style = "font-family: Arial, Helvetica, sans-serif;">
 <a center class="anchor" id="Introduction" style="background-color:Gainsboro; width:40%;"></a>
 <center style="background-color:Gainsboro; width:40%;">Introduction</center>
 
@@ -29,11 +83,11 @@ library(data.table)
 
 rm(list=ls())  #clean environment
 #Pierre RDS source
-#solar_data <- readRDS('/Documents and Settings/Pierre Computer/Documents/IE_classes/R/group project/solar_dataset.RData')
+solar_data <- readRDS('/Documents and Settings/Pierre Computer/Documents/IE_classes/R/group project/solar_dataset.RData')
 #Ivan RDS source
 #solar_data <- readRDS('C:/Users/Ivan.Polakovic/Desktop/IE/R/group assignment/solar_dataset.RData')
 #Max RDS source
-solar_data <- readRDS('/Users/admin/OneDrive/Documents/IE - Madrid/Term 1/01 R Programming/Group Assignment/GitHub/data/solar_dataset.RData')
+#solar_data <- readRDS('/Users/admin/OneDrive/Documents/IE - Madrid/Term 1/01 R Programming/Group Assignment/GitHub/data/solar_dataset.RData')
 ```
 ```{r, echo=F}
 solar_data_dt <- solar_data[,list(solar_data[1:5113,])]
@@ -68,4 +122,6 @@ scatter.smooth(date_visualization)
 
 <a center class="anchor" id="Data Manipulation" style="background-color:Gainsboro; width:40%;"></a>
 <center style="background-color:Gainsboro; width:40%;">Data Manipulation</center>
+</body>
 > 'put **stuff** here'
+
