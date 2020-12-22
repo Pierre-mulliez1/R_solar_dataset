@@ -13,10 +13,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 <style>
+
 .menutop{
     background-color: Gainsboro;
     padding: 1%;
     overflow: hidden;
+    display:flex;
     
 }.menutop a{
     font-family: inherit;
@@ -47,6 +49,59 @@ knitr::opts_chunk$set(echo = TRUE)
   display: block;
 }
 
+.container_img{
+width:200px;
+height: 150px;
+overflow: visible;
+}
+
+
+
+.dropbtn {
+  background-color: Gainsboro;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: relative;
+  display: block;
+}
+
+.dropdown-content {
+  display: none;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: inline-block;
+ 
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+  border-bottom: solid;
+  border-color: orange; 
+  border-width: 3px;}
+
+.dropdown:hover .dropdown-content {
+  display: flex;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: whitesmoke;
+}
+
+
 @media screen and (max-width: 510px) {
     .menutop{
         margin-bottom: 3%;
@@ -65,7 +120,15 @@ knitr::opts_chunk$set(echo = TRUE)
 <h3 class = 'menutop' id="Contents">
   [Contents](#Contents)
   [Introduction](#Introduction)
-  [EDA](#EDA)
+
+<div class="dropdown">
+<a class="dropbtn">Data analysis</a>
+<div class="dropdown-content">
+  [dates](#dates)
+  [station_location](#station_location)
+  [heatmaps](#heatmaps)
+</div>
+</div>
   [Data Cleaning](#Data Cleaning)
   [Data Manipulation](#Data Manipulation)
 </h3>
@@ -90,27 +153,139 @@ solar_data <- readRDS('/Documents and Settings/Pierre Computer/Documents/IE_clas
 #solar_data <- readRDS('/Users/admin/OneDrive/Documents/IE - Madrid/Term 1/01 R Programming/Group Assignment/GitHub/data/solar_dataset.RData')
 ```
 ```{r, echo=F}
+###prepare dataset
 solar_data_dt <- solar_data[,list(solar_data[1:5113,])]
-solar_data_predict <- solar_data[,list(solar_data[5114:6909,])]
-x_raw_train <- solar_data[1:5113, 2:99] 
-x_PC_train <- solar_data[1:5113, 100:456] 
-y_train <- solar_data[1:5113, 2:99] 
+#convert coltype
+solar_data_num <- sapply(solar_data_dt[,2:length(solar_data_dt)],as.double)
+solar_data_dt <- cbind(solar_data_dt[,1],solar_data_num)
+visualisation_solar <- solar_data_dt[,2:99]
+
+#summary data table 
+#data conversion for further analysis
+analysis <- function(df){
+  name <- as.character(colnames(df))
+  IQR <- as.integer(lapply(df, IQR, na.rm = TRUE))
+  median <- as.integer(lapply(df, median, na.rm = TRUE))
+  mean <- as.integer(lapply(df, mean, na.rm = TRUE))
+  stdv <- as.integer(lapply(df,sd,na.rm = TRUE))
+  maxi <- as.integer(lapply(df,max,na.rm = TRUE))
+  mini <- as.integer(lapply(df,min,na.rm = TRUE))
+  analysed <- data.table(names = name,average = mean,median = median,quantile_range = IQR, standard_deviation = stdv, maximum = maxi, minimum = mini)
+  return(analysed)
+}
+
+#summary of analysis 
+solar_analyzed <- analysis(visualisation_solar)
 ```
 
 
-```{r}
-summary(solar_data[,1:20])
-```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
+<div id= 'dates'>
+## Including Plots - dates dependent
+We have designed several plots to understand and include the right variable in our prediction, first we took a closer look at the stations pattern depending on the dates:
+# Here an overall visualization
+```{r date_variant, echo=FALSE}
 setDT(solar_data_dt)
 date_visualization <- solar_data_dt[, .(AVG = rowMeans(.SD)),Date]
 scatter.smooth(date_visualization)
 ```
+# Here visualizing by month - averaging the stations
+```{r month_variant,echo=FALSE}
+Monthlymeans <- date_visualization[,substr(Date, 5, 6)]
+plot(x = Monthlymeans,y = date_visualization$AVG,main = "average by date",xlab = "Date in int format",ylab = "Average of stations")
+```
+</div>
+<div id= 'station_location'>
+## Including Plots - station coordinates dependent
+We have merged the station additional information file with the summary of each stations as a data table to produce a comprehensible comparison  between the average of each stations accross all date, its altitude and coordinate 
+# Here we are plotting each station to its location on a map
+with a color code corresponding to it's altitude 
+```{r coordinates, echo=FALSE}
+#stations coordinates analysis
+coordinates <- read.table(file = '/Documents and Settings/Pierre Computer/Documents/IE_classes/R/group project/station_info.csv',header = TRUE,sep = ',')
+
+#install.packages('ggmap')
+library(ggmap)
+#?ggmap
+par(mfrow=c(2,2))
+map <- qmplot(elon, nlat, data = coordinates, colour = I('black'), size = I(3), darken = .3,main = 'map of stations')
+elevation <- map + geom_point(data = coordinates, aes(color  = elev))
+plot(elevation +  scale_colour_gradientn(colours = rev(rainbow(8)),
+                                  breaks = c(150, 300, 450, 600, 850),
+                                  trans = "log10"))
+```
+# Here we are plotting each station to its location on a map
+with a color code corresponding to it's average over time 
+```{r averages, echo=FALSE}
+#search for pattern between coordinate, elevation and observations
+mapo <- qmplot(elon, nlat, data = coordinates, colour = I('black'), size = I(3), darken = .3,main = 'map of observations')
+#merge the summary with elevation
+merged <- merge(x=solar_analyzed,y=coordinates,by.x = "names",by.y = "stid"  )
+mapobserved <- mapo + geom_point(data = merged, aes(color  = average))
+plot(mapobserved +  scale_colour_gradientn(colours = rev(rainbow(8)),
+                                    breaks = c(150, 300, 450, 600, 850),
+                                    trans = "log10"))
+par(mfrow=c(1,1))
+```
+</div>
+
+## Plot conclusion
+<ul>
+<li>data is time variant with seasonnality pattern; higher osbervation are noticed in the summer month </li>
+<li>data is dependent upon location and elevation with higher / west stations recording higher observation </li>
+</ul>
+
+## Correlation amoungst station 
+<div id='heatmaps'>
+following the analysis on their relative observation based on their location we thought we could establish some segmentation 
+```{r heatmaps, echo=FALSE}
+# Scatterplots per Column
+dt <- data.table(visualisation_solar)
+x <- dt[1:5113, 2:98] 
+res = cor(x)
+corr_dt = as.data.table(res)
+
+
+# Correlation Heatmat & Clustering
+correlation <- visualisation_solar[,x:= list(cor(visualisation_solar[,.SD]))]
+correlation <- as.data.frame(correlation$x[1])
+# Use 'scale' to normalize
+correlation <- sapply(X = correlation,FUN = as.double)
+data <- as.matrix(correlation)
+# Default Heatmap
+heatmap(data, scale="column")
+```
+</div>
+
+<div class= 'station_distribution'>
+## More on stations; distributions
+```{r distribution, echo=FALSE}
+#plot analysis = review 
+plot(x = solar_analyzed$average,y = solar_analyzed$standard_deviation,xlab = "mean", ylab= "standard dev")
+means <- mean(solar_analyzed$average)
+stdev <- sd(solar_analyzed$average)
+onebin <- means + stdev
+twobin <- means + stdev*2
+threebin <- means + stdev*3
+monebin <- means - stdev
+mtwobin <- means - stdev*2
+mthreebin <- means - stdev*3
+distribution <- data.frame(mthreebin,mtwobin,monebin,means,onebin,twobin,threebin)
+distribution <- sapply(distribution, as.integer) 
+#standard deviation per month  
+sd.d=function(x){sqrt((length(x)-1)/length(x))*sd(x)}
+#logarythm to simulate normal distribution ?
+dev_month <- date_visualization[,list(standarddev = sd.d(log(AVG))),list(Month = substr(Date, 5, 6))]
+#plots
+par(mfrow=c(2,2)) 
+plot(density(solar_analyzed$average), type = "l", col = "red",xlab = "averages by stations",main = "average station distribution")
+plot(dev_month, type = "l", col = "red",xlab = "average by month",main = "average date deviation (log)")
+plot(density(distribution), type = "l", col = "blue",xlab = "expected deviation",main = "expected station distribution")
+hist(solar_analyzed$average, col = "green", breaks = 5,xlab = "average hist",main = "Histogram of stations averages");
+par(mfrow=c(1,1)) 
+```
+</div>
+
 
 <a center class="anchor" id="EDA" style="background-color:Gainsboro; width:40%;"></a>
 <center style="background-color:Gainsboro; width:40%;">EDA</center>
