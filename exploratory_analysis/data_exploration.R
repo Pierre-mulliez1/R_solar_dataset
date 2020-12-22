@@ -59,7 +59,7 @@ solar_data_dt <- cbind(solar_data_dt[,1],solar_data_num)
 #visualise means, not precise !
 options(scipen = 999)
 #Divide the recording center from aditionnal information 
-visualisation_solar <- solar_data_dt[,2:98]
+visualisation_solar <- solar_data_dt[,2:99]
 means <- data.frame(round(sapply(visualisation_solar,mean),2))
 par(mfrow=c(1,1)) 
 scatter.smooth(means)
@@ -187,7 +187,25 @@ corr_list
 
 
 
-#PCA analysis: variation in the Dataset 
-
-
-
+#stations coordinates analysis
+coordinates <- read.table(file = '/Documents and Settings/Pierre Computer/Documents/IE_classes/R/group project/station_info.csv',header = TRUE,sep = ',')
+head(coordinates)
+#install.packages('ggmap')
+library(ggmap)
+#?ggmap
+par(mfrow=c(2,2))
+map <- qmplot(elon, nlat, data = coordinates, colour = I('black'), size = I(3), darken = .3,main = 'map of stations')
+elevation <- map + geom_point(data = coordinates, aes(color  = elev))
+plot(elevation +  scale_colour_gradientn(colours = rev(rainbow(8)),
+                                  breaks = c(150, 300, 450, 600, 850),
+                                  trans = "log10"))
+#search for pattern between coordinate, elevation and observations
+mapo <- qmplot(elon, nlat, data = coordinates, colour = I('black'), size = I(3), darken = .3,main = 'map of observations')
+#merge the summary with elevation
+merged <- merge(x=solar_analyzed,y=coordinates,by.x = "names",by.y = "stid"  )
+mapobserved <- mapo + geom_point(data = merged, aes(color  = average))
+plot(mapobserved +  scale_colour_gradientn(colours = rev(rainbow(8)),
+                                    breaks = c(150, 300, 450, 600, 850),
+                                    trans = "log10"))
+par(mfrow=c(1,1))
+#conclusion: strong correlation between altitude and average observation
