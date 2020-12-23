@@ -1,6 +1,6 @@
 ################################################################################
 ##################################### XGBoost ##################################
-remove(list=ls())                                          # make clean environment
+remove(list=ls()) # make clean environment
 ################################### LIBRARIES ##################################
 #install.packages("xgboost")
 library(forecast)
@@ -34,15 +34,6 @@ submit_predictions <- function(predictions){
 data <- readRDS('/Users/admin/OneDrive/Documents/IE - Madrid/Term 1/01 R Programming/Group Assignment/GitHub/data/solar_dataset.RData')
 dt <- data.table(data)
 remove(data)
-
-############################# TRAIN/PREDICT SPLIT ##############################
-
-# TRAIN TEST SPLIT + SCORING MATRIC COULD GO HERE
-column_names <- as.array(colnames(dt))                     # get array of column names       
-x <- as.matrix(dt[1:5113,100:456])                         # assign all PC Variables used in training to matrix
-y <- as.matrix(dt[1:5113,2:99])                            # assign all weather-station values to matrix
-x_predict <- as.matrix(dt[5114:6909,100:456])              # assign all PC Variables used in prediction to matrix
-predictions <- as.data.frame(dt[5114:6909, 1])             # assign dates to predict to dataframe 
 
 ############################# MULTI CORE PREDICTION ############################
 library(doMC)

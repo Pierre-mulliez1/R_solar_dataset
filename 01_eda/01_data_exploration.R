@@ -192,7 +192,16 @@ outlierreplacement <- function(dataframe){
 
 solar_data <- outlierreplacement(solar_data)
 
-# train / val / test split
+# basic date feature extraction
+solar_data <- solar_data  %>%
+  mutate(year = year(Date)) %>% 
+  mutate(month = month(Date)) %>% 
+  mutate(day = day(Date)) %>%
+  mutate(year =  as.numeric(year)) %>%
+  mutate(month =  as.numeric(month)) %>%
+  mutate(day =  as.numeric(day))
+
+############################ TRAIN / TEST / VAL SPLIT ###########################
 train_index <- sample(1:nrow(solar_data), 0.7*nrow(solar_data))
 val_index <- sample(setdiff(1:nrow(solar_data), train_index), 0.15*nrow(solar_data));  
 test_index <- setdiff(1:nrow(solar_data), c(train_index, val_index));
