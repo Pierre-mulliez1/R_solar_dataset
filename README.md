@@ -5,4 +5,6 @@ The description and the data for the competition can be found [here](https://www
 For the assigment we used the preprocessed data provided by the professor.
 
 # Instructions
-Each .R file lets you configure the path to the project. From there on, the scripts should work with no further adaptions needed.
+- Copy the data from the professor into the folder called '00_data'.
+- Each .R file lets you configure your path to the project. 
+- From there on, the scripts should work without further adaptions.
