@@ -9,7 +9,7 @@ With this lack of knowledge, we went for a pipeline, that would allow
 for model validation via a system-call of the the Kaggle API from R.
 However, this means that our best model does not implement a proper 
 train/test split, it does not make use of Hyper-Parameter Tuning or 
-Cross Validation, and it is probably far from efficient compared to others.
+Cross Validation, and is probably far from efficient compared to other models.
 
 After some experimentation with the models from the forecast 
 package (naive, ses, holt, arima, tbats, nnetar) we found that auto.arima 
