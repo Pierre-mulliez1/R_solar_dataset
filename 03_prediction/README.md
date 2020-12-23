@@ -1,4 +1,4 @@
-############################# BEST PREDICTING MODEL ############################
+# BEST PREDICTING MODEL
 
 Although forecasting models might not have been the best choice for this
 kind of problem, we chose to go with auto.arima.
