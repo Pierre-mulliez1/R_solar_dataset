@@ -6,10 +6,10 @@ The reason for this was, that we started with this part of the group-work
 before we had the classes on 'ML with R' and our intuition has guided us here.
 
 With this lack of knowledge, we went for a pipeline, that would allow
-for model validation via auto-commit over the Kaggle pipeline.
+for model validation via a system-call of the the Kaggle API from R.
 However, this means that our best model does not implement a proper 
-train/test split, it does not make use of cross-validation or 
-hyper-parameter tuning, and it is probably far from efficient.
+train/test split, it does not make use of Hyper-Parameter Tuning or 
+Cross Validation, and it is probably far from efficient compared to others.
 
 After some experimentation with the models from the forecast 
 package (naive, ses, holt, arima, tbats, nnetar) we found that auto.arima 
