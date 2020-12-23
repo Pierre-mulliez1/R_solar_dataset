@@ -44,6 +44,10 @@ docs/
 # translation temp files
 po/*~
 
-#MacOS specifics
+# MacOS specifics
 .DS_Store
+
+# Project specifics
+*.RData
+*.csv
  
