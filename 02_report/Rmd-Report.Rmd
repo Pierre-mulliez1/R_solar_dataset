@@ -293,6 +293,39 @@ plot(density(distribution), type = "l", col = "blue",xlab = "expected deviation"
 hist(solar_analyzed$average, col = "green", breaks = 5,xlab = "average hist",main = "Histogram of stations averages");
 par(mfrow=c(1,1)) 
 ```
+
+# Outliers
+
+We want to get rid of extreme outliers and of course first, we have to find them 
+
+## Finding and dealing with outliers
+
+```{r distribution, echo=FALSE}
+boxplot(x = as.list(solar_data[,2:99]))
+```
+
+# GGMAP
+
+#will work more closely on both this and outliers later, for now just mapping out sections. And for now I can't knit because of data (will ask in the chat) so it is approximate /yes maybe code is wrong, WILL FIX/
+
+Using GGMAP function, we were able to find a strong correlation between altitude and average observation.
+```{r distribution, echo=FALSE}
+plot(mapobserved +  scale_colour_gradientn(colours = rev(rainbow(8)),
+                                    breaks = c(150, 300, 450, 600, 850),
+                                    trans = "log10"))
+```
+
+# DATA PROCESSING
+
+Now that we have a good idea of our data, we will start processing it, in order to prepare it for later on building the model.
+
+## Removing outliers
+
+## Splitting into training and testing sets.
+
+We will be training our model with 70% of the original data, valuating and then testing with 15% each.
+
+
 </div>
 
 
