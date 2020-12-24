@@ -20,6 +20,7 @@ library('ggmap')
 library('lubridate')
 library('tidyr')
 library('purrr')
+library("factoextra")
 
 ############################### LOAD DATA #############################
 solar_data <- readRDS(file.path("~","Downloads","R","Group project","solar_dataset.RData"))
@@ -159,6 +160,21 @@ correlation <- as.data.frame(correlation$x[1])
 correlation <- sapply(X = correlation,FUN = as.double) # Use 'scale' to normalize
 heatmap(as.matrix(correlation), scale="column")
 
+
+# Principal Component Analysis
+solar_data_t <- t(solar_data[,-1])
+
+pca <- prcomp(solar_data_t, scale = TRUE)
+# show eigenvalue of stations
+fviz_eig(pca) 
+# show individuals
+fviz_pca_ind(pca, repel = TRUE)     
+# PCA - biplot
+fviz_pca_biplot(res.pca, repel = TRUE,
+                col.var = "#2E9FDF", # Variables color
+                col.ind = "#696969"  # Individuals color
+)
+
 ################################# GGMAP ################################
 #stations' coordinates
 coordinates <- read.table(file.path(project_folder,'00_data/station_info.csv'),
@@ -203,6 +219,8 @@ solar_data <- solar_data  %>%
   mutate(year =  as.numeric(year)) %>%
   mutate(month =  as.numeric(month)) %>%
   mutate(day =  as.numeric(day))
+
+
 
 ############################ TRAIN / TEST / VAL SPLIT ###########################
 train_index <- sample(1:nrow(solar_data), 0.7*nrow(solar_data))
