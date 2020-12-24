@@ -115,7 +115,7 @@ par(mfrow=c(1,1))
 #lower deviation for the summer month 
 
 #outliers 
-#values to detect outliers; it is assumed here that the sample is from a normal distribbution
+#values to detect outliers; it is assumed here that the sample is from a normal distribution
 distribution <- function(x, na.rm = TRUE, ...) {
   stdev <- sd(x)
   meanf <- mean(x)
