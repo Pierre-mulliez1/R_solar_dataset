@@ -3,7 +3,7 @@ title: "Report Group 4"
 output: 
   html_document:
   toc: true
-toc_float: true
+  toc_float: true
   collapsed: true
   smooth_scroll: true
 ---
@@ -153,13 +153,15 @@ library(data.table)
 
 rm(list=ls())  #clean environment
 #Pierre RDS source
-solar_data <- readRDS('/Documents and Settings/Pierre Computer/Documents/IE_classes/R/group project/solar_dataset.RData')
+#solar_data <- readRDS('/Documents and Settings/Pierre Computer/Documents/IE_classes/R/group project/solar_dataset.RData')
 #Ivan RDS source
 #solar_data <- readRDS('C:/Users/Ivan.Polakovic/Desktop/IE/R/group assignment/solar_dataset.RData')
 #Max RDS source
 #solar_data <- readRDS('/Users/admin/OneDrive/Documents/IE - Madrid/Term 1/01 R Programming/Group Assignment/GitHub/data/solar_dataset.RData')
 #Oxana RDS source
-#solar_data <- readRDS('/Users/opanvas/Downloads/GitHub/R_solar_dataset/data/solar_dataset.RData')
+solar_data <- readRDS(file.path("~","Downloads","R","Group project","solar_dataset.RData"))
+#Oxana file path
+file_path_stations <- file.path("~","Downloads","R","Group project","station_info.csv")
 ```
 ```{r, echo=F}
 ###prepare dataset
@@ -188,30 +190,36 @@ solar_analyzed <- analysis(visualisation_solar)
 ```
 
 
-
 <div id= 'dates'>
-## Including Plots - dates dependent
+
+# Exploratory Data Analysis
+
+## Including Plots: Dates dependent
 We have designed several plots to understand and include the right variable in our prediction, first we took a closer look at the stations pattern depending on the dates:
-# Here an overall visualization
+
+### Here an overall visualization
+
 ```{r date_variant, echo=FALSE}
 setDT(solar_data_dt)
 date_visualization <- solar_data_dt[, .(AVG = rowMeans(.SD)),Date]
 scatter.smooth(date_visualization)
 ```
-# Here visualizing by month - averaging the stations
+
+### Here visualizing by month - averaging the stations
+
 ```{r month_variant,echo=FALSE}
 Monthlymeans <- date_visualization[,substr(Date, 5, 6)]
 plot(x = Monthlymeans,y = date_visualization$AVG,main = "average by date",xlab = "Date in int format",ylab = "Average of stations")
 ```
 </div>
 <div id= 'station_location'>
-## Including Plots - station coordinates dependent
+
+## Including Plots: station coordinates dependent
 We have merged the station additional information file with the summary of each stations as a data table to produce a comprehensible comparison  between the average of each stations accross all date, its altitude and coordinate 
-# Here we are plotting each station to its location on a map
-with a color code corresponding to it's altitude 
+### Here we are plotting each station to its location on a map with a color code corresponding to it's altitude 
 ```{r coordinates, echo=FALSE}
 #stations coordinates analysis
-coordinates <- read.table(file = '/Documents and Settings/Pierre Computer/Documents/IE_classes/R/group project/station_info.csv',header = TRUE,sep = ',')
+coordinates <- read.table(file_path_stations,header = TRUE,sep = ',')
 
 #install.packages('ggmap')
 library(ggmap)
@@ -223,8 +231,9 @@ plot(elevation +  scale_colour_gradientn(colours = rev(rainbow(8)),
                                   breaks = c(150, 300, 450, 600, 850),
                                   trans = "log10"))
 ```
-# Here we are plotting each station to its location on a map
-with a color code corresponding to it's average over time 
+
+# Here we are plotting each station to its location on a map with a color code corresponding to it's average over time 
+
 ```{r averages, echo=FALSE}
 #search for pattern between coordinate, elevation and observations
 mapo <- qmplot(elon, nlat, data = coordinates, colour = I('black'), size = I(3), darken = .3,main = 'map of observations')
@@ -240,13 +249,15 @@ par(mfrow=c(1,1))
 
 ## Plot conclusion
 <ul>
-<li>data is time variant with seasonnality pattern; higher osbervation are noticed in the summer month </li>
-<li>data is dependent upon location and elevation with higher / west stations recording higher observation </li>
+<li> Using GGMAP function, we were able to find a strong correlation between altitude and average observation </li>
+<li> Data is time variant with seasonnality pattern; higher osbervation are noticed in the summer month </li>
+<li> Data is dependent upon location and elevation with higher / west stations recording higher observation </li>
 </ul>
 
-## Correlation amoungst station 
+## Correlation among stations
 <div id='heatmaps'>
-following the analysis on their relative observation based on their location we thought we could establish some segmentation 
+Following the analysis on their relative observation based on their location we thought we could establish some segmentation:
+
 ```{r heatmaps, echo=FALSE}
 # Scatterplots per Column
 dt <- data.table(visualisation_solar)
@@ -267,7 +278,8 @@ heatmap(data, scale="column")
 </div>
 
 <div class= 'station_distribution'>
-## More on stations; distributions
+## More on stations: distributions:
+
 ```{r distribution, echo=FALSE}
 #plot analysis = review 
 plot(x = solar_analyzed$average,y = solar_analyzed$standard_deviation,xlab = "mean", ylab= "standard dev")
@@ -294,51 +306,40 @@ hist(solar_analyzed$average, col = "green", breaks = 5,xlab = "average hist",mai
 par(mfrow=c(1,1)) 
 ```
 
-# Outliers
+# EDA & DATA PREPARATION 
 
-We want to get rid of extreme outliers and of course first, we have to find them 
+In order to obtain the results displayed above, we needed to prepare and the data: 
+<ul>
+<li> Finding NA ratio per column in order to see their potential influence the analysis</li>
+<li> We needed to find and map the extreme outliers </li>
+</ul>
 
-## Finding and dealing with outliers
+## Outliers
 
-```{r distribution, echo=FALSE}
+### Finding outliers
+
+```{r, echo=FALSE}
 boxplot(x = as.list(solar_data[,2:99]))
-```
-
-# GGMAP
-
-#will work more closely on both this and outliers later, for now just mapping out sections. And for now I can't knit because of data (will ask in the chat) so it is approximate /yes maybe code is wrong, WILL FIX/
-
-Using GGMAP function, we were able to find a strong correlation between altitude and average observation.
-```{r distribution, echo=FALSE}
-plot(mapobserved +  scale_colour_gradientn(colours = rev(rainbow(8)),
-                                    breaks = c(150, 300, 450, 600, 850),
-                                    trans = "log10"))
 ```
 
 # DATA PROCESSING
 
-Now that we have a good idea of our data, we will start processing it, in order to prepare it for later on building the model.
+<ul>
+<li> Once we had our outliers mapped, we replaced them with NA values in order to decrease the potential bias</li>
+<li> Then once we have tackled the outliers, it was time to split the data and start training our model </li>
+</ul>
 
-## Removing outliers
 
 ## Splitting into training and testing sets.
 
-We will be training our model with 70% of the original data, valuating and then testing with 15% each.
+ We will be training our model with 70% of the original data, valuating and then testing with 15% each. </li>
+ 
+```{r, echo = TRUE}
+train_index <- sample(1:nrow(solar_data), 0.7*nrow(solar_data))
+val_index <- sample(setdiff(1:nrow(solar_data), train_index), 0.15*nrow(solar_data));  
+test_index <- setdiff(1:nrow(solar_data), c(train_index, val_index))
 
+```
 
 </div>
-
-
-<a center class="anchor" id="EDA" style="background-color:Gainsboro; width:40%;"></a>
-<center style="background-color:Gainsboro; width:40%;">EDA</center>
-> 'put **stuff** here'
-
-<a center class="anchor" id="Data Cleaning" style="background-color:Gainsboro; width:40%;"></a>
-<center style="background-color:Gainsboro; width:40%;">Data Cleaning</center>
-> 'put **stuff** here'
-
-<a center class="anchor" id="Data Manipulation" style="background-color:Gainsboro; width:40%;"></a>
-<center style="background-color:Gainsboro; width:40%;">Data Manipulation</center>
-</body>
-> 'put **stuff** here'
 
