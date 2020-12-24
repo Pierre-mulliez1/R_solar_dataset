@@ -1,6 +1,11 @@
 ---
 title: "Report Group 4"
-output: html_document
+output: 
+  html_document:
+  toc: true
+toc_float: true
+  collapsed: true
+  smooth_scroll: true
 ---
 
 ```{r setup, include=FALSE}
@@ -141,6 +146,8 @@ overflow: visible;
 
 The data can be found  [here](https://www.kaggle.com/c/ams-2014-solar-energy-prediction-contest/overview)
 
+
+
 ```{r, echo=F}
 library(data.table)
 
@@ -151,6 +158,8 @@ solar_data <- readRDS('/Documents and Settings/Pierre Computer/Documents/IE_clas
 #solar_data <- readRDS('C:/Users/Ivan.Polakovic/Desktop/IE/R/group assignment/solar_dataset.RData')
 #Max RDS source
 #solar_data <- readRDS('/Users/admin/OneDrive/Documents/IE - Madrid/Term 1/01 R Programming/Group Assignment/GitHub/data/solar_dataset.RData')
+#Oxana RDS source
+#solar_data <- readRDS('/Users/opanvas/Downloads/GitHub/R_solar_dataset/data/solar_dataset.RData')
 ```
 ```{r, echo=F}
 ###prepare dataset
