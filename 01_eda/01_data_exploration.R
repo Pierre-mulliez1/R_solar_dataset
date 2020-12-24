@@ -11,7 +11,7 @@ project_folder <- '/Users/admin/OneDrive/GitHub/R_Solar_Competition'  # MacOs
 #project_folder <- 'C:/Users/Ivan.Polakovic/Desktop/IE/R/group assignment'
 
 #Oxana 
-#project_folder <-'/Users/opanvas/Downloads/GitHub/R_solar_dataset'  # MacOs
+#project_folder<-'/Users/opanvas/Downloads/R/Group project'  # MacOs
 
 ############################### LOAD LIBRARIES #############################
 library('data.table')
@@ -22,8 +22,8 @@ library('tidyr')
 library('purrr')
 
 ############################### LOAD DATA #############################
-solar_data <- readRDS(file.path(project_folder,'00_data/solar_dataset.RData'))
-
+solar_data <- readRDS(file.path("~","Downloads","R","Group project","solar_dataset.RData"))
+#had to change to work on markdown
 
 ############################### EDA #############################
 # get overview 
