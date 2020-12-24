@@ -10,6 +10,9 @@ project_folder <- '/Users/admin/OneDrive/GitHub/R_Solar_Competition'  # MacOs
 # Ivan
 #project_folder <- 'C:/Users/Ivan.Polakovic/Desktop/IE/R/group assignment'
 
+#Oxana 
+#project_folder <-/Users/opanvas/Downloads/GitHub/R_solar_dataset'  # MacOs
+
 ############################### LOAD LIBRARIES #############################
 library('data.table')
 library('dplyr')
