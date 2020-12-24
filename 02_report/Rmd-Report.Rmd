@@ -192,9 +192,12 @@ solar_analyzed <- analysis(visualisation_solar)
 
 <div id= 'dates'>
 
-# Exploratory Data Analysis
+# Exploratory Data Analysis Highlights
+
+In order to carry out this task, we are first going to take a closer look at the data available, to determine which transformations should be taken place before we proceed to data processing stage and then make the predicitive model.
 
 ## Including Plots: Dates dependent
+
 We have designed several plots to understand and include the right variable in our prediction, first we took a closer look at the stations pattern depending on the dates:
 
 ### Here an overall visualization
@@ -216,6 +219,7 @@ plot(x = Monthlymeans,y = date_visualization$AVG,main = "average by date",xlab =
 
 ## Including Plots: station coordinates dependent
 We have merged the station additional information file with the summary of each stations as a data table to produce a comprehensible comparison  between the average of each stations accross all date, its altitude and coordinate 
+
 ### Here we are plotting each station to its location on a map with a color code corresponding to it's altitude 
 ```{r coordinates, echo=FALSE}
 #stations coordinates analysis
@@ -232,7 +236,7 @@ plot(elevation +  scale_colour_gradientn(colours = rev(rainbow(8)),
                                   trans = "log10"))
 ```
 
-# Here we are plotting each station to its location on a map with a color code corresponding to it's average over time 
+### And to compliment that, here we are plotting each station to its location on a map with a color code corresponding to it's average over time 
 
 ```{r averages, echo=FALSE}
 #search for pattern between coordinate, elevation and observations
@@ -306,7 +310,7 @@ hist(solar_analyzed$average, col = "green", breaks = 5,xlab = "average hist",mai
 par(mfrow=c(1,1)) 
 ```
 
-# EDA & DATA PREPARATION 
+# DATA PREPARATION 
 
 In order to obtain the results displayed above, we needed to prepare and the data: 
 <ul>
@@ -343,3 +347,10 @@ test_index <- setdiff(1:nrow(solar_data), c(train_index, val_index))
 
 </div>
 
+<div>
+
+# BUILDING THE MODELS
+
+While looking for our top performing model, we looked at the variety of different algorithms that could be used for this purpose, including **xgboost** and **svm**. After testing multiple models, we came to the conclusion that **X model [TBA based on Max's results]** was best suited for the purposes of this assigments, so we are going to showcase it below.
+
+</div>
