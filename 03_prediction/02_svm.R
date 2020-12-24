@@ -11,9 +11,37 @@ library('lubridate')
 library('foreach');
 library('doParallel')
 library('e1071')
+library('sprint')
 
 ############################### LOAD DATA #############################
-solar_data <- load(file.path(project_folder,'00_data/train_val_test.rda'))
+load(file.path(project_folder,'00_data/train_val_test.rda'))
+
+############################### FUNCTIONS #############################
+svm_pred <- function(col, pca_n){
+  # model fitting    
+  model <- svm(x = train[, ..col], y = train[, ..pca_n], kernel="radial",
+               cost = c, epsilon = eps, gamma = gamma
+  )
+  
+  # prediction
+  predictions_train <- predict(model, newdata = train[, ..pca_n]);
+  predictions_val <- predict(model, newdata = val[, ..pca_n]);
+  
+  # errors
+  errors_train <- predictions_train - train[, ..col];
+  errors_val <- predictions_val - val[, ..col];
+  
+  # Compute Metrics
+  mae_train <- round(mean(abs(errors_train)), 2);
+  mae_val <- round(mean(abs(errors_val)), 2);
+  
+  # Build comparison table
+  result  <- data.table(c = c, eps = eps, gamma = gamma, 
+                        mae_train = mae_train,
+                        mae_val = mae_val)
+  
+  return(result)
+}
 
 ############################## HYPER PARAMETER GRID ############################
 c_values <- seq(from = 10^1, to = 10^5, length.out = 10)
@@ -25,36 +53,15 @@ registerDoParallel(cores = detectCores())
 
 # parallel loop structure
 grid_results <-
-  #foreach (c = c_values, .combine = rbind) %:%
-  #foreach (eps = eps_values, .combine = rbind) %:%
-  #foreach (gamma = gamma_values, .combine = rbind) %:%
+  foreach (c = c_values, .combine = rbind) %:%
+  foreach (eps = eps_values, .combine = rbind) %:%
+  foreach (gamma = gamma_values, .combine = rbind) %:%
   foreach (col = 2:99, 
            .packages = c("e1071", "data.table"),
-           .combine = rbind) %dopar%{
+           .combine = rbind) %dopar% 
+  svm_pred(col, pca_n=100)
 
-    # model fitting    
-    model <- svm(x = train[, col], y = train[, 100:456], kernel="radial",
-                 #cost = c, epsilon = eps, gamma = gamma
-                 )
-    
-    # prediction
-    predictions_train <- predict(model, newdata = train[, 100:456]);
-    predictions_val <- predict(model, newdata = val[, 100:456]);
-    
-    # errors
-    errors_train <- predictions_train - train[, col];
-    errors_val <- predictions_val - val[, col];
-    
-    # Compute Metrics
-    mae_train <- round(mean(abs(errors_train)), 2);
-    mae_val <- round(mean(abs(errors_val)), 2);
-    
-    # Build comparison table
-    data.table(c = c, eps = eps, gamma = gamma, 
-               mae_train = mae_train,
-               mae_val = mae_val);
-  }
-
+             
 # Order results by increasing mse and mae
 grid_results <- grid_results[order(mae_val, mae_train)];
 
