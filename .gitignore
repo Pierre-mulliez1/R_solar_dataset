@@ -50,4 +50,4 @@ po/*~
 # Project specifics
 *.RData
 *.csv
- 
+!final_submission.csv
