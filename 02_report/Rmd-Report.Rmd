@@ -2,9 +2,7 @@
 title: "Report Group 4"
 author: "MBD S2 Group 4"
 date: "Navidades 2020"
-output: 
-  html_document:
-    self_contained: no
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
