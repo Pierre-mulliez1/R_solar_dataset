@@ -11,10 +11,11 @@ library('lubridate')
 library('foreach');
 library('doParallel')
 require('xgboost')
-library('sprint')
 
 ############################### LOAD DATA #############################
 load(file.path(project_folder,'00_data/train_val_test.rda'))
+data <- readRDS(file.path(project_folder,'00_data/solar_dataset.RData'))
+dt <- data.table(data)
 
 x_train <- as.matrix(train[,100:456])                         # assign all PC Variables used in training to matrix
 y_train <- as.matrix(train[,2:99])                            # assign all weather-station values to matrix
@@ -29,10 +30,10 @@ x_predict <- as.matrix(dt[5114:6909,100:456])
 y_predict <- as.data.frame(dt[5114:6909, 1])              
 
 ############################### FUNCTIONS #############################
-xgboost_pred <- function(col){
+xgboost_fit <- function(col, depth, eta, rounds){
   # model fitting    
   model <- xgboost(data = x_train, label = y_train[,col],
-                   max_depth = 2, eta = 1, nrounds = 2, nthread = 4, 
+                   max_depth = depth, eta = eta, nrounds = rounds, nthread = 4, 
                    objective = "reg:pseudohubererror")
   
   # prediction
@@ -49,55 +50,63 @@ xgboost_pred <- function(col){
   
   # Build comparison table
   result  <- data.table(mae_train = mae_train,
-                        mae_val = mae_val)
+                        mae_val = mae_val, 
+                        depth = max_depth,
+                        eta = eta,
+                        rounds = nrounds)
   
   return(result)
 }
 
+
+xgboost_predict <- function(col, depth, eta, rounds){
+  # model fitting    
+  model <- xgboost(data = x_train, label = y_train[,col],
+                   max_depth = depth, eta = eta, nrounds = rounds, nthread = 4, 
+                   objective = "reg:pseudohubererror")
+  
+  # prediction
+  predictions_test <- predict(model, newdata = x_test);
+  return(predictions_test)
+}
+
 ############################## HYPER PARAMETER GRID ############################
-#c_values <- seq(from = 10^1, to = 10^5, length.out = 10)
-#eps_values <- seq(from = 10^-7, to = 10^-5, length.out = 10)
-#gamma_values <- seq(from = 10^-7, to = 10^-5, length.out = 10)
+max_depth <- seq(from = 2, to = 300, length.out = 10)
+eta <- seq(from = 0.1, to = 0.9, length.out = 0.2)
+nrounds <- seq(from = 70, to = 300, length.out = 10)
 
 ############################## START PARALLEL FITTING ############################
-registerDoParallel(cores = detectCores())
+registerDoParallel(2)
 
 # parallel loop structure
+# !!!attention!!! 
+# this operation consumes a lot of RAM
 grid_results <-
-  #foreach (c = c_values, .combine = rbind) %:%
-  #foreach (eps = eps_values, .combine = rbind) %:%
-  #foreach (gamma = gamma_values, .combine = rbind) %:%
+  foreach (depth = max_depth, .combine = rbind) %:%
+  foreach (eta = eta, .combine = rbind) %:%
+  foreach (rounds = nrounds, .combine = rbind) %:%
   foreach (col = 1:98, 
            .packages = c('xgboost', 'data.table'),
            .combine = rbind) %dopar% 
-  xgboost_pred(col)
+  xgboost_fit(col, depth, eta, rounds)
 
 
 # Order results by increasing mse and mae
-grid_results <- grid_results[order(mae_val, mae_train)];
+grid_results <- grid_results[order(
+  mae_val, mae_train)];
 
 # Check results
 best <- grid_results[1];
 
 ### Train final model
-# train SVM model with best found set of hyperparamets
-model <- svm(disp ~ ., data = train, kernel="radial",
-             cost = best$c, epsilon = best$eps, gamma = best$gamma);
+predictions <-
+  foreach (col = 1:98, 
+           .packages = c('xgboost', 'data.table'),
+           .combine = rbind) %dopar% 
+  xgboost_fit(col, depth, eta, rounds)
 
-# Get model predictions
-predictions_train <- predict(model, newdata = train);
-predictions_val <- predict(model, newdata = val);
-predictions_test <- predict(model, newdata = test);
+write.csv(prediction$mean, file=paste("00_data/prediction_xgboost", col , '.csv', sep=""))
 
-# Get errors
-errors_train <- predictions_train - train$disp;
-errors_val <- predictions_val - val$disp;
-errors_test <- predictions_test - test$disp;
 
-# Compute Metrics
-mae_train <- round(mean(abs(errors_train)), 2);
-mae_val <- round(mean(abs(errors_val)), 2);
-mae_test <- round(mean(abs(errors_test)), 2);
 
-## Summary
-sprintf("MAE_train = %s - MAE_val = %s - MAE_test = %s", mae_train, mae_val, mae_test);
+
