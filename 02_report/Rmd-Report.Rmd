@@ -1,11 +1,10 @@
 ---
 title: "Report Group 4"
+author: "MBD S2 Group 4"
+date: "Navidades 2020"
 output: 
   html_document:
-  toc: true
-  toc_float: true
-  collapsed: true
-  smooth_scroll: true
+    self_contained: no
 ---
 
 ```{r setup, include=FALSE}
@@ -134,8 +133,9 @@ overflow: visible;
   [heatmaps](#heatmaps)
 </div>
 </div>
-  [Data Cleaning](#Data Cleaning)
-  [Data Manipulation](#Data Manipulation)
+  [Data Preparation](#data_preparation)
+  [Data Processing](#data_processing)
+  [Building the Model](#building_the_model)
 </h3>
 <body style = "font-family: Arial, Helvetica, sans-serif;">
 <a center class="anchor" id="Introduction" style="background-color:Gainsboro; width:40%;"></a>
@@ -194,7 +194,7 @@ solar_analyzed <- analysis(visualisation_solar)
 
 # Exploratory Data Analysis Highlights
 
-In order to carry out this task, we are first going to take a closer look at the data available, to determine which transformations should be taken place before we proceed to data processing stage and then make the predicitive model.
+In order to carry out this task, we are first going to take a closer look at the data available, to determine which transformations should be taken place before we proceed to data processing stage and then make the predictive model.
 
 ## Including Plots: Dates dependent
 
@@ -310,6 +310,7 @@ hist(solar_analyzed$average, col = "green", breaks = 5,xlab = "average hist",mai
 par(mfrow=c(1,1)) 
 ```
 
+<div id= 'data_preparation'>
 # DATA PREPARATION 
 
 In order to obtain the results displayed above, we needed to prepare and the data: 
@@ -326,6 +327,9 @@ In order to obtain the results displayed above, we needed to prepare and the dat
 boxplot(x = as.list(solar_data[,2:99]))
 ```
 
+</div>
+
+<div id= 'data_processing'>
 # DATA PROCESSING
 
 <ul>
@@ -347,10 +351,28 @@ test_index <- setdiff(1:nrow(solar_data), c(train_index, val_index))
 
 </div>
 
-<div>
+<div id= 'building_the_model'>
 
-# BUILDING THE MODELS
+# BUILDING THE MODEL
 
-While looking for our top performing model, we looked at the variety of different algorithms that could be used for this purpose, including **xgboost** and **svm**. After testing multiple models, we came to the conclusion that **X model [TBA based on Max's results]** was best suited for the purposes of this assigments, so we are going to showcase it below.
+While looking for our top performing model, we looked at the variety of different algorithms that could be used for this purpose, including **xgboost** and **svm**. After testing multiple models, we came to the conclusion that **auto.arima** was best suited for the purposes of this assigments, so we are going to showcase it below.
+
+*Although forecasting models might not have been the best choice for this kind of problem, we chose to go with auto.arima.* The reason for this was, that we started with this part of the group-work before we had the classes on 'ML with R' and our intuition has guided us here.
+
+With this lack of knowledge, we went for a pipeline, that would allow for model validation via a system-call of the the Kaggle API from R. However, this means that our best model does not implement a proper  train/test split, it does not make use of Hyper-Parameter Tuning or Cross Validation, and is probably far from efficient compared to other models.
+
+After some experimentation with the models from the forecast package (incl. naive, ses, holt, arima, tbats, nnetar) we found that auto.arima resulted in the best scores. When we added additional external regressor variables, the score further improved. When we added the variables from the principal component analysis
+provided by the professor the score continued to improve, however the processing time also increased substantially. 
+
+To decrease processing time, we paralleled the prediction by rows, which resulted in an increase of performance. 
+
+**The last run of this prediction happened on 8 cores and took about 40h**. The scores achieved with auto.arima heavily depended on the amount of PCA-Variables used as external regressors.
+
+What it took us to build this model
+
+![What it took us to build this model](max-models.jpeg)
+[In case image doesn't work, see here](https://imgur.com/a/QKktlXN)
+
+**We are very excited for you to see our final model!**
 
 </div>
