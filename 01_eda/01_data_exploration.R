@@ -120,8 +120,8 @@ par(mfrow=c(1,1))
 distribution <- function(x, na.rm = TRUE, ...) {
   stdev <- sd(x)
   meanf <- mean(x)
-  H <- meanf + 3 * stdev
-  L <- meanf - 3 * stdev
+  H <- meanf + 1.5 * stdev
+  L <- meanf - 1.5 * stdev
   if (L < 0){L <- 0}
   out <- list(H,L)
   return(out)}
@@ -143,9 +143,9 @@ outliers <- function(x){
       print(ele)
       val <-  data.table(column = el,Hlimit = limit[[count]],Llimit = limit[[countI]],value = ele)
       y <- rbind(y,val)
-      y <- y[value > Hlimit || value < Llimit,.SD]
     }
   }
+  y <- y[value > Hlimit | value < Llimit,.SD]
   return(y)
 }
 
